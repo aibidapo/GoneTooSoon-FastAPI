@@ -19,7 +19,7 @@ class DisplayProduct(BaseModel):
         
         
 class Seller(BaseModel):
-    name: str
+    username: str
     email: str
     password: str
     id: int

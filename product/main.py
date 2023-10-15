@@ -10,7 +10,7 @@ from fastapi import status
 
 
 
-app = FastAPI(title="Product App 🧙🏼 '\U0001F913' ")
+app = FastAPI(title="GoneTooSoon 🧙🏼 '\U0001F913' ")
 
 models.Base.metadata.create_all(engine)
 
@@ -76,5 +76,10 @@ def add(request:schemas.Product, db: Session = Depends(get_db)):
 
 @app.post('/seller')
 def create_seller(request:schemas.Seller, db: Session = Depends(get_db)):
-    new_seller
+    new_seller = models.Seller(username=request.username, email=request.email, 
+                               password=request.password)
+    
+    db.add(new_seller)
+    db.commit()
+    db.refresh(new_seller)
     return request
