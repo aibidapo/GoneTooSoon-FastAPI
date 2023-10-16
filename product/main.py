@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 from .import schemas
 from .import models
 from .database import engine, SessionLocal
-from typing import List
 from fastapi import status
 from passlib.context import CryptContext
+from .database  import get_db
+from .routers import product
 
 
 
@@ -27,8 +28,10 @@ app = FastAPI (
         'name': 'Apache Software License',
         'url': 'http://www.google.com'
     },
-    docs_url="/documentation"
+    # docs_url="/documentation", redoc_url=None # Changes the documentation path to our API
     )
+
+app.include_router(product.router)
 
 
 
@@ -38,62 +41,6 @@ models.Base.metadata.create_all(engine)
 # Initialize a password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-# Define a function to get a database session using context manager
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Define a route to get a list of products
-@app.get('/products', response_model=List[schemas.DisplayProduct], tags=["Products"])
-def products(db: Session = Depends(get_db)):
-    products = db.query(models.Product).all()
-    return products
-
-
-
-# Define a route to delete a product by its ID
-@app.delete('/product/{id}', tags=["Products"])
-def delete_product(id, db: Session = Depends(get_db)):
-    db.query(models.Product).filter(models.Product.id == id).delete(synchronize_session=False)
-    db.commit()
-    return {f'Product {id} deleted'}
-
-
-
-# Define a route to get a product by its ID
-@app.get('/product/{id}', response_model=schemas.DisplayProduct, tags=["Products"])
-def product(id, response: Response, db: Session = Depends(get_db)):
-    product = db.query(models.Product).filter(models.Product.id == id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail=f"Product {id} not found")
-    return product
-
-
-
-# Define a route to update a product by its ID
-@app.put('/products/{id}', tags=["Products"])
-def update_product(id, request: schemas.Product, db: Session = Depends(get_db)):
-    product = db.query(models.Product).filter(models.Product.id == id)
-    if not product.first():
-        pass
-    product.update(request.dict())
-    db.commit()
-    return {f'Product {id} successfully updated'}
-
-
-
-# Define a route to add a new product
-@app.post('/product', status_code=status.HTTP_201_CREATED, tags=["Products"])
-def add(request: schemas.Product, db: Session = Depends(get_db)):
-    new_product = models.Product(name=request.name, description=request.description, price=request.price, seller_id=1)
-    db.add(new_product)
-    db.commit()
-    db.refresh(new_product)
-    return request
 
 
 
