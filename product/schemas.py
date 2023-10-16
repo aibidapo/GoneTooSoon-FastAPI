@@ -11,11 +11,23 @@ class Product(BaseModel):
 
 
 
+# Defining a Pydantic model for displaying 'Seller' data
+class DisplaySeller(BaseModel):
+    username: str     # Username of the seller (string)
+    email: str        # Email of the seller (string)
+    # id: int           # Identifier (ID) of the seller (integer)
+
+    # Pydantic model configuration
+    class Config:
+        orm_mode = True  # Configuring 'orm_mode' to work with SQLAlchemy ORM
+
+
+
 # Defining a Pydantic model for displaying 'Product' data
 class DisplayProduct(BaseModel):
     name: str         # Name of the product (string)
     description: str  # Description of the product (string)
-    id: int           # Identifier (ID) of the product (integer)
+    seller: DisplaySeller
 
     # Pydantic model configuration
     class Config:
@@ -29,16 +41,8 @@ class Seller(BaseModel):
     username: str     # Username of the seller (string)
     email: str        # Email of the seller (string)
     password: str     # Password of the seller (string)
-    id: int           # Identifier (ID) of the seller (integer)
+    # id: int           # Identifier (ID) of the seller (integer)
 
 
 
-# Defining a Pydantic model for displaying 'Seller' data
-class DisplaySeller(BaseModel):
-    username: str     # Username of the seller (string)
-    email: str        # Email of the seller (string)
-    id: int           # Identifier (ID) of the seller (integer)
 
-    # Pydantic model configuration
-    class Config:
-        orm_mode = True  # Configuring 'orm_mode' to work with SQLAlchemy ORM

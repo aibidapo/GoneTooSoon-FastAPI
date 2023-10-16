@@ -13,7 +13,11 @@ from passlib.context import CryptContext
 
 
 # Create a FastAPI application
-app = FastAPI(title="GoneTooSoon 🧙🏼 '\U0001F913' ")
+app = FastAPI(
+    
+    title="GoneTooSoon Deals🧙🏼 '\U0001F913' "
+    description = "Get information about awesome deals FAST!"
+    )
 
 
 
@@ -74,7 +78,7 @@ def update_product(id, request: schemas.Product, db: Session = Depends(get_db)):
 # Define a route to add a new product
 @app.post('/product', status_code=status.HTTP_201_CREATED)
 def add(request: schemas.Product, db: Session = Depends(get_db)):
-    new_product = models.Product(name=request.name, description=request.description, price=request.price)
+    new_product = models.Product(name=request.name, description=request.description, price=request.price, seller_id=1)
     db.add(new_product)
     db.commit()
     db.refresh(new_product)
