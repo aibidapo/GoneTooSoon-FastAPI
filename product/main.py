@@ -13,10 +13,21 @@ from passlib.context import CryptContext
 
 
 # Create a FastAPI application
-app = FastAPI(
+app = FastAPI (
     
-    title="GoneTooSoon Deals🧙🏼 '\U0001F913' "
-    description = "Get information about awesome deals FAST!"
+    title="GoneTooSoon Deals🧙🏼 '\U0001F913' ",
+    description = 'Get information about awesome product deals FAST!',
+    terms_of_service = 'http://www.google.com/',
+    contact= {
+        "Developer name": "A. Ibidapo",
+        "website": 'http://www.google.com',
+        "email": 'contact_me@anytime.com',
+    },
+    license_info={
+        'name': 'Apache Software License',
+        'url': 'http://www.google.com'
+    },
+    docs_url="/documentation"
     )
 
 
@@ -37,7 +48,7 @@ def get_db():
         db.close()
 
 # Define a route to get a list of products
-@app.get('/products', response_model=List[schemas.DisplayProduct])
+@app.get('/products', response_model=List[schemas.DisplayProduct], tags=["Products"])
 def products(db: Session = Depends(get_db)):
     products = db.query(models.Product).all()
     return products
@@ -45,7 +56,7 @@ def products(db: Session = Depends(get_db)):
 
 
 # Define a route to delete a product by its ID
-@app.delete('/product/{id}')
+@app.delete('/product/{id}', tags=["Products"])
 def delete_product(id, db: Session = Depends(get_db)):
     db.query(models.Product).filter(models.Product.id == id).delete(synchronize_session=False)
     db.commit()
@@ -54,7 +65,7 @@ def delete_product(id, db: Session = Depends(get_db)):
 
 
 # Define a route to get a product by its ID
-@app.get('/product/{id}', response_model=schemas.DisplayProduct)
+@app.get('/product/{id}', response_model=schemas.DisplayProduct, tags=["Products"])
 def product(id, response: Response, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     if not product:
@@ -64,7 +75,7 @@ def product(id, response: Response, db: Session = Depends(get_db)):
 
 
 # Define a route to update a product by its ID
-@app.put('/products/{id}')
+@app.put('/products/{id}', tags=["Products"])
 def update_product(id, request: schemas.Product, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id)
     if not product.first():
@@ -76,7 +87,7 @@ def update_product(id, request: schemas.Product, db: Session = Depends(get_db)):
 
 
 # Define a route to add a new product
-@app.post('/product', status_code=status.HTTP_201_CREATED)
+@app.post('/product', status_code=status.HTTP_201_CREATED, tags=["Products"])
 def add(request: schemas.Product, db: Session = Depends(get_db)):
     new_product = models.Product(name=request.name, description=request.description, price=request.price, seller_id=1)
     db.add(new_product)
@@ -87,7 +98,7 @@ def add(request: schemas.Product, db: Session = Depends(get_db)):
 
 
 # Define a route to create a new seller
-@app.post('/seller', response_model=schemas.DisplaySeller)
+@app.post('/seller', response_model=schemas.DisplaySeller, tags=["Seller"])
 def create_seller(request: schemas.Seller, db: Session = Depends(get_db)):
     # Hash the seller's password for security
     hashedpassword = pwd_context.hash(request.password)
