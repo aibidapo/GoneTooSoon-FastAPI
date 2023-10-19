@@ -44,5 +44,9 @@ class Seller(BaseModel):
     # id: int           # Identifier (ID) of the seller (integer)
 
 
+class Login(BaseModel):
+    username: str # Username of the login (string)
+    password: str # Password of the login (string)
+
 
 
