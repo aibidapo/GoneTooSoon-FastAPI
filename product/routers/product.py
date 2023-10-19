@@ -50,7 +50,6 @@ def update_product(id, request: schemas.Product, db: Session = Depends(get_db)):
     return {f'Product {id} successfully updated'}
 
 
-
 # Define a route to add a new product
 @router.post('/product', status_code=status.HTTP_201_CREATED, tags=["Products"])
 def add(request: schemas.Product, db: Session = Depends(get_db)):

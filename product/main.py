@@ -1,20 +1,13 @@
 # Import necessary modules and packages
-from fastapi import FastAPI, Response, HTTPException
-from sqlalchemy.sql.functions import mode
-from fastapi.params import Depends
-from sqlalchemy.orm import Session
-from .import schemas
+from fastapi import FastAPI
 from .import models
-from .database import engine, SessionLocal
-from fastapi import status
-from passlib.context import CryptContext
-from .database  import get_db
-from .routers import product
+from .database import engine
+from .routers import product, seller
 
 
 
 # Create a FastAPI application
-app = FastAPI (
+app = FastAPI(
     
     title="GoneTooSoon Deals🧙🏼 '\U0001F913' ",
     description = 'Get information about awesome product deals FAST!',
@@ -32,25 +25,15 @@ app = FastAPI (
     )
 
 app.include_router(product.router)
-
+app.include_router(seller.router)
 
 
 # Create database tables if they don't exist
 models.Base.metadata.create_all(engine)
 
-# Initialize a password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 
 
-# Define a route to create a new seller
-@app.post('/seller', response_model=schemas.DisplaySeller, tags=["Seller"])
-def create_seller(request: schemas.Seller, db: Session = Depends(get_db)):
-    # Hash the seller's password for security
-    hashedpassword = pwd_context.hash(request.password)
-    new_seller = models.Seller(username=request.username, email=request.email, password=hashedpassword)
-    db.add(new_seller)
-    db.commit()
-    db.refresh(new_seller)
-    return new_seller
+
+
